@@ -670,11 +670,13 @@ const menuButton = $("#menuButton");
 menuButton.addEventListener("click", () => {
   const open = menuButton.getAttribute("aria-expanded") === "true";
   menuButton.setAttribute("aria-expanded", String(!open));
+  menuButton.setAttribute("aria-label", open ? "Open navigation" : "Close navigation");
   $("#mobileNav").classList.toggle("open", !open);
 });
 
 $$('#mobileNav a').forEach((link) => link.addEventListener("click", () => {
   menuButton.setAttribute("aria-expanded", "false");
+  menuButton.setAttribute("aria-label", "Open navigation");
   $("#mobileNav").classList.remove("open");
 }));
 
