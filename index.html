@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f1f0e9" />
+    <meta name="description" content="Flightpath is an unofficial AERO and VELO migration modeling desk." />
+    <title>Flightpath — AERO × VELO Migration Desk</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231b40ff'/%3E%3Cpath d='M15 49 45 15' stroke='white' stroke-width='8' stroke-linecap='square'/%3E%3Cpath d='M24 18h23v23' fill='none' stroke='%23c8ff32' stroke-width='6'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="Flightpath home">
+        <span class="wordmark-symbol">F/</span>
+        <span class="wordmark-name">FLIGHT<br />PATH</span>
+      </a>
+
+      <div class="header-tape" aria-label="Market snapshot">
+        <div><span>AERO / USD</span><strong>$0.4923</strong><em>+2.84</em></div>
+        <div><span>VELO / USD</span><strong>$0.0210</strong><em>+5.17</em></div>
+      </div>
+
+      <div class="header-status">
+        <span class="live-mark"><i></i> MARKET SNAPSHOT</span>
+        <time id="localClock">00:00:00 IST</time>
+      </div>
+
+      <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="mobileNav">
+        <span></span><span></span>
+      </button>
+      <nav class="mobile-nav" id="mobileNav">
+        <a href="#model">Model</a>
+        <a href="#routes">Routes</a>
+        <a href="#migration">Migration</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-gridlines" aria-hidden="true"></div>
+        <div class="hero-topline entrance">
+          <span>AERO × VELO MIGRATION DESK · UNOFFICIAL</span>
+          <span>FLIGHTPATH / 001</span>
+        </div>
+
+        <div class="hero-main">
+          <div class="hero-title entrance delay-1">
+            <p class="hero-kicker">AERO × VELO</p>
+            <h1>One merge.<br /><span>Two ways in.</span></h1>
+          </div>
+
+          <div class="hero-brief entrance delay-2">
+            <span class="big-arrow" aria-hidden="true">↘</span>
+            <p>
+              Compare both conversion paths, model your final position, and see
+              the economics before the two ecosystems converge.
+            </p>
+            <a href="#model">BUILD A POSITION <b>↓</b></a>
+          </div>
+        </div>
+
+        <div class="signal-card entrance delay-3">
+          <div class="signal-card-label">
+            <span>TODAY'S ROUTE SIGNAL</span>
+            <span>16 JUL 2026</span>
+          </div>
+          <div class="signal-layout">
+            <div class="signal-route">
+              <span class="asset-stamp velo-stamp"><img src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span>
+              <div>
+                <small>LOWEST IMPLIED PRICE</small>
+                <strong>VELO</strong>
+              </div>
+            </div>
+            <div class="signal-spread">
+              <span>AERO PREMIUM</span>
+              <strong id="heroPremium">4.31%</strong>
+            </div>
+            <div class="signal-copy">
+              <p>Every $10k routed through VELO currently carries about</p>
+              <strong id="heroSaving">$413</strong>
+              <span>of additional entry efficiency.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="model-section" id="model" aria-labelledby="modelTitle">
+        <div class="section-intro reveal">
+          <div class="section-number">01</div>
+          <div>
+            <span class="overline">POSITION MODEL</span>
+            <h2 id="modelTitle">Build your<br />merged position.</h2>
+          </div>
+          <p>Enter what you hold. AERO upgrades 1:1; VELO converts into its fixed 5.5% share of the launch supply.</p>
+        </div>
+
+        <div class="conversion-desk reveal">
+          <div class="desk-meta">
+            <span>INPUT ASSETS</span>
+            <span>EST. VALUE</span>
+            <button id="resetButton" type="button">RESET MODEL</button>
+          </div>
+
+          <div class="asset-inputs">
+            <label class="asset-row aero-row" for="aeroAmount">
+              <span class="asset-stamp aero-stamp"><img src="https://aerodrome.finance/brand-kit/AERO/symbol.svg" alt="" /></span>
+              <span class="asset-name"><strong>AERO</strong><small>AERODROME</small></span>
+              <input id="aeroAmount" value="10000" inputmode="decimal" aria-label="AERO amount" />
+              <span class="asset-value" id="aeroValue">$4,923.00</span>
+            </label>
+
+            <div class="merge-junction" aria-hidden="true">
+              <span></span><b>+</b><span></span>
+            </div>
+
+            <label class="asset-row velo-row" for="veloAmount">
+              <span class="asset-stamp velo-stamp"><img src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span>
+              <span class="asset-name"><strong>VELO</strong><small>VELODROME</small></span>
+              <input id="veloAmount" value="200000" inputmode="decimal" aria-label="VELO amount" />
+              <span class="asset-value" id="veloValue">$4,192.00</span>
+            </label>
+          </div>
+
+          <div class="desk-flow" aria-hidden="true">
+            <svg viewBox="0 0 120 420" preserveAspectRatio="none">
+              <path d="M0 106h34c22 0 22 104 48 104h38" />
+              <path d="M0 314h34c22 0 22-104 48-104h38" />
+            </svg>
+            <span>MERGE</span>
+          </div>
+
+          <div class="output-panel">
+            <div class="output-label"><span>YOUR ESTIMATED OUTPUT</span><i>CALCULATED</i></div>
+            <div class="output-total">
+              <strong id="totalOutput">18,388.92</strong>
+              <span>NEW TOKENS</span>
+            </div>
+            <div class="output-split">
+              <div><span>AERO contribution</span><strong id="aeroOutput">9,740.04</strong></div>
+              <div><span>VELO contribution</span><strong id="veloOutput">8,648.88</strong></div>
+            </div>
+            <div class="allocation-line">
+              <span id="aeroAllocationBar"></span><span id="veloAllocationBar"></span>
+            </div>
+            <div class="allocation-key">
+              <span><i class="key-aero"></i>94.5% AERO allocation</span>
+              <span><i class="key-velo"></i>5.5% VELO allocation</span>
+            </div>
+          </div>
+
+          <div class="basis-bar">
+            <div>
+              <span>OFFICIAL SUPPLY FORMULA</span>
+              <strong>AERO supply ÷ 94.5%</strong>
+            </div>
+            <p>The launch ratio becomes final after the shared migration epoch. This desk uses the latest displayed supplies as an estimate.</p>
+            <div>
+              <span>EST. INITIAL SUPPLY</span>
+              <strong id="derivedSupply">2.05B</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="model-facts reveal">
+          <div><span>01 / AERO UPGRADE</span><strong>1 : 1</strong><small>One old AERO becomes one new AERO</small></div>
+          <div><span>02 / VELO ESTIMATE</span><strong id="veloRatio">22.5233</strong><small>VELO required per new AERO</small></div>
+          <div><span>03 / INITIAL ALLOCATION</span><strong>94.5 / 5.5</strong><small>Aerodrome share / Velodrome share</small></div>
+          <div><span>04 / ESTIMATE STATUS</span><strong class="status-value">NOT FINAL</strong><small>Finalized at the migration epoch</small></div>
+        </div>
+      </section>
+
+      <section class="routes-section" id="routes" aria-labelledby="routesTitle">
+        <div class="routes-wrap">
+          <div class="section-intro routes-intro reveal">
+            <div class="section-number">02</div>
+            <div>
+              <span class="overline">ROUTE PRICING</span>
+              <h2 id="routesTitle">Price decides<br />the way in.</h2>
+            </div>
+            <p>Both assets mint the same destination. They do not buy it at the same price.</p>
+          </div>
+
+          <div class="route-board reveal">
+            <div class="route-board-head">
+              <span>ROUTE</span><span>REQUIRED INPUT</span><span>IMPLIED UNIT PRICE</span><span>SIGNAL</span>
+            </div>
+
+            <article class="route-entry">
+              <div class="route-asset"><span class="asset-stamp aero-stamp"><img src="https://aerodrome.finance/brand-kit/AERO/symbol.svg" alt="" /></span><strong>AERO</strong></div>
+              <div><strong id="aeroRequired">1.0267</strong><span>AERO</span></div>
+              <div><strong id="aeroRoutePrice">$0.5054</strong><span>PER NEW TOKEN</span></div>
+              <div class="route-signal premium"><i></i>PREMIUM</div>
+            </article>
+
+            <article class="route-entry winner-entry">
+              <div class="route-asset"><span class="asset-stamp velo-stamp"><img src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span><strong>VELO</strong></div>
+              <div><strong id="veloRequired">23.1244</strong><span>VELO</span></div>
+              <div><strong id="veloRoutePrice">$0.4846</strong><span>PER NEW TOKEN</span></div>
+              <div class="route-signal efficient"><i></i>BEST ROUTE</div>
+            </article>
+
+            <div class="route-verdict">
+              <div>
+                <span>ABSOLUTE SPREAD</span>
+                <strong id="spreadDollar">$0.0209</strong>
+              </div>
+              <p><b>VELO</b> is the cheaper synthetic entry today. AERO trades <strong id="spreadPercent">4.31%</strong> above the VELO-implied merger price.</p>
+              <span class="verdict-arrow">↘</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="history-section" aria-labelledby="historyTitle">
+        <div class="history-head reveal">
+          <div>
+            <span class="overline">RELATIVE PRICE HISTORY</span>
+            <h2 id="historyTitle">AERO premium to VELO</h2>
+          </div>
+          <div class="period-switcher" role="group" aria-label="Chart date range">
+            <button type="button" data-period="24H">24H</button>
+            <button type="button" data-period="7D">7D</button>
+            <button class="active" type="button" data-period="30D">30D</button>
+            <button type="button" data-period="1Y">1Y</button>
+          </div>
+        </div>
+
+        <div class="history-body reveal">
+          <aside class="history-stats">
+            <div><span>LATEST</span><strong id="chartLatest">+4.31%</strong></div>
+            <div><span>PERIOD HIGH</span><strong id="chartHigh">+6.10%</strong></div>
+            <div><span>PERIOD AVG.</span><strong id="chartAverage">+3.76%</strong></div>
+            <p>Above zero, VELO is cheaper.<br />Below zero, AERO is cheaper.</p>
+          </aside>
+          <div class="chart-frame">
+            <div class="chart-y-axis"><span>+10%</span><span>+5%</span><span>0%</span><span>−5%</span></div>
+            <svg id="historyChart" viewBox="0 0 1000 340" preserveAspectRatio="none" role="img" aria-label="AERO premium to VELO chart">
+              <defs>
+                <linearGradient id="areaFade" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#1b40ff" stop-opacity=".24" />
+                  <stop offset="1" stop-color="#1b40ff" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <g class="chart-grid">
+                <line x1="0" y1="22" x2="1000" y2="22" />
+                <line x1="0" y1="117" x2="1000" y2="117" />
+                <line class="zero" x1="0" y1="212" x2="1000" y2="212" />
+                <line x1="0" y1="307" x2="1000" y2="307" />
+              </g>
+              <path id="chartArea" class="chart-area" d="" />
+              <polyline id="chartLine" class="chart-line" points="" />
+              <line id="endGuide" class="end-guide" x1="1000" x2="1000" y1="0" y2="340" />
+              <circle id="endHalo" class="end-halo" cx="1000" cy="0" r="11" />
+              <circle id="endPoint" class="end-point" cx="1000" cy="0" r="4" />
+            </svg>
+            <div class="chart-callout" id="chartCallout"><span>NOW</span><strong>+4.31%</strong></div>
+            <div class="chart-x-axis" id="chartLabels"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="migration-section" id="migration" aria-labelledby="migrationTitle">
+        <div class="section-intro migration-intro reveal">
+          <div class="section-number">03</div>
+          <div>
+            <span class="overline">MIGRATION PATHS</span>
+            <h2 id="migrationTitle">Know what<br />moves.</h2>
+          </div>
+          <p>Liquid and staked positions reach the same new token, but the preparation steps are different.</p>
+        </div>
+
+        <div class="migration-grid reveal">
+          <article class="migration-card liquid-card">
+            <div class="migration-card-head">
+              <span class="path-number">PATH / 01</span>
+              <span class="path-badge">LIQUID</span>
+            </div>
+            <div class="migration-card-title">
+              <div class="token-pair"><span class="asset-stamp aero-stamp"><img src="https://aerodrome.finance/brand-kit/AERO/symbol.svg" alt="" /></span><span class="asset-stamp velo-stamp"><img src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span></div>
+              <h3>AERO + VELO</h3>
+              <p>Wallet-held liquid tokens upgrade directly through the migration contract.</p>
+            </div>
+            <ol class="path-steps">
+              <li><span>01</span><p>Connect the wallet holding your liquid tokens.</p></li>
+              <li><span>02</span><p>Upgrade AERO 1:1 or VELO at the finalized migration ratio.</p></li>
+              <li><span>03</span><p>Receive the upgraded AERO token on Aero.</p></li>
+            </ol>
+            <div class="path-note"><strong>NO DEADLINE</strong><span>The migration contract is expected to remain available after launch.</span></div>
+          </article>
+
+          <article class="migration-card staked-card">
+            <div class="migration-card-head">
+              <span class="path-number">PATH / 02</span>
+              <span class="path-badge">STAKED</span>
+            </div>
+            <div class="migration-card-title">
+              <div class="nft-stamp">NFT</div>
+              <h3>veAERO + veVELO</h3>
+              <p>Locked positions become new sAERO NFTs while preserving their economic term.</p>
+            </div>
+            <ol class="path-steps">
+              <li><span>01</span><p>Withdraw veNFTs from Relay or any external custody contract.</p></li>
+              <li><span>02</span><p>Claim all pending rewards before starting migration.</p></li>
+              <li><span>03</span><p>Burn the old veNFT and mint a new sAERO position.</p></li>
+            </ol>
+            <div class="path-note"><strong>TERM PRESERVED</strong><span>Converted token amount and remaining staking term carry forward.</span></div>
+          </article>
+
+          <article class="migration-wide-card">
+            <div>
+              <span class="overline">WHAT CHANGES AFTER LAUNCH</span>
+              <h3>No voting. No epochs.</h3>
+            </div>
+            <p>Weekly voting is replaced by Predictive Allocation. sAERO operators allocate rewards on a rolling cadence and receive exchange revenue as it accrues.</p>
+            <div class="change-list">
+              <span><b>48H</b> initial reallocation window</span>
+              <span><b>LIVE</b> revenue distribution</span>
+              <span><b>ZERO</b> sAERO rebases</span>
+            </div>
+            <div class="source-link-wrap">
+              <span>Source updated from official Aero migration documentation</span>
+              <a href="https://aero.xyz/articles/aero-economic-case/" target="_blank" rel="noreferrer">READ OFFICIAL DETAILS ↗</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-mark">F/</div>
+      <div class="footer-copy">
+        <strong>FLIGHTPATH</strong>
+        <p>AERO × VELO Migration Desk · Unofficial model</p>
+      </div>
+      <div class="footer-data">
+        <span>DATA / COINBASE + ON-CHAIN SUPPLY</span>
+        <span>INDICATIVE MODEL · NOT FINANCIAL ADVICE</span>
+      </div>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
