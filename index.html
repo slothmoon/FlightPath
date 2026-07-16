@@ -17,8 +17,8 @@
       </a>
 
       <div class="header-tape" aria-label="Market snapshot">
-        <div><span>AERO / USD</span><strong id="aeroHeaderPrice">$0.4923</strong><em id="aeroHeaderChange">—</em></div>
-        <div><span>VELO / USD</span><strong id="veloHeaderPrice">$0.0210</strong><em id="veloHeaderChange">—</em></div>
+        <div><span>AERO / USD</span><strong id="aeroHeaderPrice">—</strong><em id="aeroHeaderChange">—</em></div>
+        <div><span>VELO / USD</span><strong id="veloHeaderPrice">—</strong><em id="veloHeaderChange">—</em></div>
       </div>
 
       <div class="header-status">
@@ -67,20 +67,20 @@
           </div>
           <div class="signal-layout">
             <div class="signal-route">
-              <span class="asset-stamp velo-stamp" id="heroRouteStamp"><img id="heroRouteLogo" src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span>
+              <span class="asset-stamp velo-stamp" id="heroRouteStamp" hidden><img id="heroRouteLogo" src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span>
               <div>
                 <small>LOWEST IMPLIED PRICE</small>
-                <strong id="heroRouteName">VELO</strong>
+                <strong id="heroRouteName">UNAVAILABLE</strong>
               </div>
             </div>
             <div class="signal-spread">
-              <span id="heroPremiumLabel">AERO PREMIUM</span>
-              <strong id="heroPremium">4.31%</strong>
+              <span id="heroPremiumLabel">ROUTE PREMIUM</span>
+              <strong id="heroPremium">—</strong>
             </div>
             <div class="signal-copy">
-              <p id="heroSavingCopy">Every $10k routed through VELO currently carries about</p>
-              <strong id="heroSaving">$413</strong>
-              <span>of additional entry efficiency.</span>
+              <p id="heroSavingCopy">Live prices and both on-chain supplies are required.</p>
+              <strong id="heroSaving">—</strong>
+              <span id="heroSavingSuffix">No fallback values are shown.</span>
             </div>
           </div>
         </div>
@@ -108,7 +108,7 @@
               <span class="asset-stamp aero-stamp"><img src="https://aerodrome.finance/brand-kit/AERO/symbol.svg" alt="" /></span>
               <span class="asset-name"><strong>AERO</strong><small>AERODROME</small></span>
               <input id="aeroAmount" value="10000" inputmode="decimal" aria-label="AERO amount" />
-              <span class="asset-value" id="aeroValue">$4,923.00</span>
+              <span class="asset-value" id="aeroValue">—</span>
             </label>
 
             <div class="merge-junction" aria-hidden="true">
@@ -119,7 +119,7 @@
               <span class="asset-stamp velo-stamp"><img src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span>
               <span class="asset-name"><strong>VELO</strong><small>VELODROME</small></span>
               <input id="veloAmount" value="200000" inputmode="decimal" aria-label="VELO amount" />
-              <span class="asset-value" id="veloValue">$4,192.00</span>
+              <span class="asset-value" id="veloValue">—</span>
             </label>
           </div>
 
@@ -134,12 +134,12 @@
           <div class="output-panel">
             <div class="output-label"><span>YOUR ESTIMATED OUTPUT</span><i>CALCULATED</i></div>
             <div class="output-total">
-              <strong id="totalOutput">18,388.92</strong>
+              <strong id="totalOutput">—</strong>
               <span>NEW TOKENS</span>
             </div>
             <div class="output-split">
-              <div><span>AERO contribution</span><strong id="aeroOutput">9,740.04</strong></div>
-              <div><span>VELO contribution</span><strong id="veloOutput">8,648.88</strong></div>
+              <div><span>AERO contribution</span><strong id="aeroOutput">—</strong></div>
+              <div><span>VELO contribution</span><strong id="veloOutput">—</strong></div>
             </div>
             <div class="allocation-line">
               <span id="aeroAllocationBar"></span><span id="veloAllocationBar"></span>
@@ -158,14 +158,14 @@
             <p>The launch ratio becomes final after the shared migration epoch. This desk uses the latest displayed supplies as an estimate.</p>
             <div>
               <span>EST. INITIAL SUPPLY</span>
-              <strong id="derivedSupply">2.05B</strong>
+              <strong id="derivedSupply">—</strong>
             </div>
           </div>
         </div>
 
         <div class="model-facts reveal">
           <div><span>01 / AERO UPGRADE</span><strong>1 : 1</strong><small>One old AERO becomes one new AERO</small></div>
-          <div><span>02 / VELO ESTIMATE</span><strong id="veloRatio">22.5233</strong><small>VELO required per new AERO</small></div>
+          <div><span>02 / VELO ESTIMATE</span><strong id="veloRatio">—</strong><small>VELO required per new AERO</small></div>
           <div><span>03 / INITIAL ALLOCATION</span><strong>94.5 / 5.5</strong><small>Aerodrome share / Velodrome share</small></div>
           <div><span>04 / ESTIMATE STATUS</span><strong class="status-value">NOT FINAL</strong><small>Finalized at the migration epoch</small></div>
         </div>
@@ -190,23 +190,23 @@
             <article class="route-entry" id="aeroRouteEntry">
               <div class="route-asset"><span class="asset-stamp aero-stamp"><img src="https://aerodrome.finance/brand-kit/AERO/symbol.svg" alt="" /></span><strong>AERO</strong></div>
               <div><strong id="aeroRequired">1.0000</strong><span>AERO</span></div>
-              <div><strong id="aeroRoutePrice">$0.4923</strong><span>PER NEW TOKEN</span></div>
-              <div class="route-signal premium" id="aeroSignal"><i></i>PREMIUM</div>
+              <div><strong id="aeroRoutePrice">—</strong><span>PER NEW TOKEN</span></div>
+              <div class="route-signal unavailable" id="aeroSignal"><i></i>DATA UNAVAILABLE</div>
             </article>
 
-            <article class="route-entry winner-entry" id="veloRouteEntry">
+            <article class="route-entry" id="veloRouteEntry">
               <div class="route-asset"><span class="asset-stamp velo-stamp"><img src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span><strong>VELO</strong></div>
-              <div><strong id="veloRequired">22.5232</strong><span>VELO</span></div>
-              <div><strong id="veloRoutePrice">$0.4721</strong><span>PER NEW TOKEN</span></div>
-              <div class="route-signal efficient" id="veloSignal"><i></i>BEST ROUTE</div>
+              <div><strong id="veloRequired">—</strong><span>VELO</span></div>
+              <div><strong id="veloRoutePrice">—</strong><span>PER NEW TOKEN</span></div>
+              <div class="route-signal unavailable" id="veloSignal"><i></i>DATA UNAVAILABLE</div>
             </article>
 
             <div class="route-verdict">
               <div>
                 <span>ABSOLUTE SPREAD</span>
-                <strong id="spreadDollar">$0.0209</strong>
+                <strong id="spreadDollar">—</strong>
               </div>
-              <p><b id="cheaperRouteName">VELO</b> is the cheaper synthetic entry today. <span id="premiumRouteName">AERO</span> trades <strong id="spreadPercent">4.31%</strong> above the <span id="comparisonRouteName">VELO</span>-implied merger price.</p>
+              <p id="routeVerdictCopy">Route comparison requires live AERO and VELO prices plus both on-chain supplies.</p>
               <span class="verdict-arrow">↘</span>
             </div>
           </div>
@@ -229,13 +229,13 @@
 
         <div class="history-body reveal">
           <aside class="history-stats">
-            <div><span>LATEST</span><strong id="chartLatest">+4.31%</strong></div>
-            <div><span>PERIOD HIGH</span><strong id="chartHigh">+6.10%</strong></div>
-            <div><span>PERIOD AVG.</span><strong id="chartAverage">+3.76%</strong></div>
+            <div><span>LATEST</span><strong id="chartLatest">—</strong></div>
+            <div><span>PERIOD HIGH</span><strong id="chartHigh">—</strong></div>
+            <div><span>PERIOD AVG.</span><strong id="chartAverage">—</strong></div>
             <p>Above zero, VELO is cheaper.<br />Below zero, AERO is cheaper.<br /><br />Coinbase candles · current on-chain migration ratio.</p>
           </aside>
           <div class="chart-frame">
-            <div class="chart-y-axis" id="chartYAxis"><span>+10%</span><span>+5%</span><span>0%</span><span>−5%</span></div>
+            <div class="chart-y-axis" id="chartYAxis"></div>
             <svg id="historyChart" viewBox="0 0 1000 340" preserveAspectRatio="none" role="img" aria-label="AERO premium to VELO chart">
               <defs>
                 <linearGradient id="areaFade" x1="0" y1="0" x2="0" y2="1">
@@ -252,15 +252,16 @@
               </g>
               <path id="chartArea" class="chart-area" d="" />
               <polyline id="chartLine" class="chart-line" points="" />
-              <line id="endGuide" class="end-guide" x1="1000" x2="1000" y1="0" y2="340" />
-              <circle id="endHalo" class="end-halo" cx="1000" cy="0" r="11" />
-              <circle id="endPoint" class="end-point" cx="1000" cy="0" r="4" />
+              <line id="endGuide" class="end-guide" x1="1000" x2="1000" y1="0" y2="340" style="visibility: hidden" />
+              <circle id="endHalo" class="end-halo" cx="1000" cy="0" r="11" style="visibility: hidden" />
+              <circle id="endPoint" class="end-point" cx="1000" cy="0" r="4" style="visibility: hidden" />
             </svg>
-            <div class="chart-callout" id="chartCallout">
-              <span id="chartTooltipRoute">VELO CHEAPER</span>
-              <strong id="chartTooltipValue">4.13% DISCOUNT</strong>
-              <small id="chartTooltipMetric">AERO PREMIUM +4.31%</small>
-              <small id="chartTooltipDate">NOW</small>
+            <div class="chart-empty" id="chartEmpty">LOADING LIVE HISTORY</div>
+            <div class="chart-callout" id="chartCallout" hidden>
+              <span id="chartTooltipRoute">DATA UNAVAILABLE</span>
+              <strong id="chartTooltipValue">—</strong>
+              <small id="chartTooltipMetric">AERO PREMIUM —</small>
+              <small id="chartTooltipDate">—</small>
             </div>
             <div class="chart-x-axis" id="chartLabels"></div>
           </div>

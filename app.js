@@ -8,17 +8,32 @@ const DATA_SOURCES = Object.freeze({
   veloLogo: "https://velodrome.finance/brand-kit/VELO/symbol.svg",
 });
 
-// Initial values keep the calculator usable while the visitor's browser loads fresh data.
 const market = {
-  aeroSupply: 1_940_444_000.428,
-  veloSupply: 2_543_682_868.231,
-  aeroPrice: 0.4923,
-  veloPrice: 0.02096,
+  aeroSupply: null,
+  veloSupply: null,
+  aeroPrice: null,
+  veloPrice: null,
   aeroChange: null,
   veloChange: null,
   aeroShare: 0.945,
   veloShare: 0.055,
+  aeroUpdatedAt: null,
+  veloUpdatedAt: null,
   updatedAt: null,
+};
+
+const sourceHealth = {
+  aeroPrice: "loading",
+  veloPrice: "loading",
+  aeroSupply: "loading",
+  veloSupply: "loading",
+};
+
+const sourceLabels = {
+  aeroPrice: "Coinbase AERO",
+  veloPrice: "Coinbase VELO",
+  aeroSupply: "Base RPC",
+  veloSupply: "Optimism RPC",
 };
 
 const defaults = { aero: 10_000, velo: 200_000 };
@@ -40,11 +55,11 @@ const ui = {
   aeroRoutePrice: $("#aeroRoutePrice"),
   veloRoutePrice: $("#veloRoutePrice"),
   spreadDollar: $("#spreadDollar"),
-  spreadPercent: $("#spreadPercent"),
   heroPremium: $("#heroPremium"),
   heroSaving: $("#heroSaving"),
   heroPremiumLabel: $("#heroPremiumLabel"),
   heroSavingCopy: $("#heroSavingCopy"),
+  heroSavingSuffix: $("#heroSavingSuffix"),
   heroRouteName: $("#heroRouteName"),
   heroRouteStamp: $("#heroRouteStamp"),
   heroRouteLogo: $("#heroRouteLogo"),
@@ -52,9 +67,7 @@ const ui = {
   veloRouteEntry: $("#veloRouteEntry"),
   aeroSignal: $("#aeroSignal"),
   veloSignal: $("#veloSignal"),
-  cheaperRouteName: $("#cheaperRouteName"),
-  premiumRouteName: $("#premiumRouteName"),
-  comparisonRouteName: $("#comparisonRouteName"),
+  routeVerdictCopy: $("#routeVerdictCopy"),
   aeroHeaderPrice: $("#aeroHeaderPrice"),
   veloHeaderPrice: $("#veloHeaderPrice"),
   aeroHeaderChange: $("#aeroHeaderChange"),
@@ -64,10 +77,10 @@ const ui = {
 };
 
 const periods = {
-  "24H": { data: [3.2, 3.55, 3.1, 3.9, 4.44, 4.05, 4.61, 4.18, 4.31], labels: ["00:00", "06:00", "12:00", "18:00", "NOW"] },
-  "7D": { data: [1.55, 2.08, 1.18, 2.75, 3.5, 2.88, 4.12, 3.81, 4.31], labels: ["10 JUL", "12 JUL", "14 JUL", "15 JUL", "NOW"] },
-  "30D": { data: [2.2, 2.8, 1.6, 0.8, 2.4, 3.9, 3.2, 4.7, 5.6, 3.8, 4.2, 6.1, 5.2, 4.31], labels: ["17 JUN", "24 JUN", "01 JUL", "08 JUL", "NOW"] },
-  "1Y": { data: [-2.8, -1.2, 1.1, 4.8, 3.2, 6.6, 8.4, 5.2, 2.8, 1.6, 3.7, 4.31], labels: ["JUL '25", "OCT '25", "JAN '26", "APR '26", "NOW"] },
+  "24H": { data: null, labels: [], timestamps: [], state: "idle", error: null },
+  "7D": { data: null, labels: [], timestamps: [], state: "idle", error: null },
+  "30D": { data: null, labels: [], timestamps: [], state: "idle", error: null },
+  "1Y": { data: null, labels: [], timestamps: [], state: "idle", error: null },
 };
 
 let activePeriod = "30D";
@@ -96,8 +109,22 @@ const compact = (value) => value >= 1e9
   : `${(value / 1e6).toFixed(2)}M`;
 
 const signedPercent = (value) => `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
+const isPositive = (value) => Number.isFinite(value) && value > 0;
+
+function hasSupplyRatio() {
+  return isPositive(market.aeroSupply) && isPositive(market.veloSupply);
+}
+
+function setText(element, value, formatter = String) {
+  element.textContent = Number.isFinite(value) ? formatter(value) : "—";
+}
 
 function setRouteSignal(element, isWinner) {
+  if (isWinner === null) {
+    element.className = "route-signal unavailable";
+    element.innerHTML = "<i></i>DATA UNAVAILABLE";
+    return;
+  }
   element.className = `route-signal ${isWinner ? "efficient" : "premium"}`;
   element.innerHTML = `<i></i>${isWinner ? "BEST ROUTE" : "PREMIUM"}`;
 }
@@ -113,12 +140,14 @@ function updateChange(element, value) {
 }
 
 function updateMarketMeta() {
-  ui.aeroHeaderPrice.textContent = money(market.aeroPrice, 4);
-  ui.veloHeaderPrice.textContent = money(market.veloPrice, 4);
+  ui.aeroHeaderPrice.textContent = isPositive(market.aeroPrice) ? money(market.aeroPrice, 4) : "—";
+  ui.veloHeaderPrice.textContent = isPositive(market.veloPrice) ? money(market.veloPrice, 4) : "—";
   updateChange(ui.aeroHeaderChange, market.aeroChange);
   updateChange(ui.veloHeaderChange, market.veloChange);
 
-  if (market.updatedAt) {
+  const livePrices = [sourceHealth.aeroPrice, sourceHealth.veloPrice].filter((state) => state === "live").length;
+  const loadingPrices = [sourceHealth.aeroPrice, sourceHealth.veloPrice].some((state) => state === "loading");
+  if (livePrices === 2 && market.updatedAt) {
     const timestamp = new Intl.DateTimeFormat("en-GB", {
       day: "2-digit",
       month: "short",
@@ -129,29 +158,85 @@ function updateMarketMeta() {
       timeZone: "Asia/Kolkata",
     }).format(market.updatedAt).replace(",", " ·").toUpperCase();
     ui.snapshotDate.textContent = timestamp;
+  } else if (livePrices > 0) {
+    ui.snapshotDate.textContent = "PARTIAL COINBASE DATA";
+  } else {
+    ui.snapshotDate.textContent = loadingPrices ? "AWAITING COINBASE DATA" : "COINBASE DATA UNAVAILABLE";
   }
 }
 
 function setDataStatus(state, text) {
   const wrapper = ui.dataStatus.closest(".live-mark");
-  wrapper.classList.remove("loading", "partial");
+  wrapper.classList.remove("loading", "partial", "unavailable");
   if (state !== "live") wrapper.classList.add(state);
   ui.dataStatus.textContent = text;
+}
+
+function updateDataStatus() {
+  const entries = Object.entries(sourceHealth);
+  const liveCount = entries.filter(([, state]) => state === "live").length;
+  const loadingCount = entries.filter(([, state]) => state === "loading").length;
+  if (liveCount === entries.length) {
+    setDataStatus("live", "DIRECT DATA LIVE");
+  } else if (liveCount === 0 && loadingCount > 0) {
+    setDataStatus("loading", "LOADING DIRECT DATA");
+  } else if (liveCount === 0) {
+    setDataStatus("unavailable", "DIRECT DATA UNAVAILABLE");
+  } else {
+    const failed = entries.filter(([, state]) => state === "error");
+    const partialText = failed.length === 1
+      ? `${sourceLabels[failed[0][0]].toUpperCase()} UNAVAILABLE`
+      : `${liveCount}/${entries.length} DATA FEEDS LIVE`;
+    setDataStatus("partial", partialText);
+  }
+  ui.dataStatus.closest(".live-mark").title = entries
+    .map(([source, state]) => `${sourceLabels[source]}: ${state.toUpperCase()}`)
+    .join(" · ");
 }
 
 function calculate() {
   const aeroAmount = number(ui.aero.value);
   const veloAmount = number(ui.velo.value);
-  const supply = market.aeroSupply / market.aeroShare;
+  const supply = isPositive(market.aeroSupply) ? market.aeroSupply / market.aeroShare : null;
   const aeroRatio = 1;
-  const veloRatio = market.veloSupply / (supply * market.veloShare);
+  const veloRatio = hasSupplyRatio() ? market.veloSupply / (supply * market.veloShare) : null;
   const aeroOutput = aeroAmount;
-  const veloOutput = veloAmount / veloRatio;
-  const totalOutput = aeroOutput + veloOutput;
-  const aeroRoutePrice = market.aeroPrice;
-  const veloRoutePrice = veloRatio * market.veloPrice;
+  const veloOutput = isPositive(veloRatio) ? veloAmount / veloRatio : null;
+  const totalOutput = Number.isFinite(veloOutput) ? aeroOutput + veloOutput : null;
+  const aeroRoutePrice = isPositive(market.aeroPrice) ? market.aeroPrice : null;
+  const veloRoutePrice = isPositive(veloRatio) && isPositive(market.veloPrice) ? veloRatio * market.veloPrice : null;
+  const comparisonAvailable = isPositive(aeroRoutePrice) && isPositive(veloRoutePrice);
+
+  setText(ui.aeroValue, isPositive(market.aeroPrice) ? aeroAmount * market.aeroPrice : null, (value) => money(value));
+  setText(ui.veloValue, isPositive(market.veloPrice) ? veloAmount * market.veloPrice : null, (value) => money(value));
+  setText(ui.total, totalOutput, (value) => format(value));
+  ui.aeroOutput.textContent = format(aeroOutput);
+  setText(ui.veloOutput, veloOutput, (value) => format(value));
+  setText(ui.derivedSupply, supply, (value) => compact(value));
+  setText(ui.veloRatio, veloRatio, (value) => format(value, 4));
+  ui.aeroRequired.textContent = format(aeroRatio, 4);
+  setText(ui.veloRequired, veloRatio, (value) => format(value, 4));
+  setText(ui.aeroRoutePrice, aeroRoutePrice, (value) => money(value, 4));
+  setText(ui.veloRoutePrice, veloRoutePrice, (value) => money(value, 4));
+
+  if (!comparisonAvailable) {
+    ui.spreadDollar.textContent = "—";
+    ui.heroPremium.textContent = "—";
+    ui.heroSaving.textContent = "—";
+    ui.heroPremiumLabel.textContent = "ROUTE PREMIUM";
+    ui.heroSavingCopy.textContent = "Live prices and both on-chain supplies are required.";
+    ui.heroSavingSuffix.textContent = "No fallback values are shown.";
+    ui.heroRouteName.textContent = "UNAVAILABLE";
+    ui.heroRouteStamp.hidden = true;
+    ui.aeroRouteEntry.classList.remove("winner-entry");
+    ui.veloRouteEntry.classList.remove("winner-entry");
+    setRouteSignal(ui.aeroSignal, null);
+    setRouteSignal(ui.veloSignal, null);
+    ui.routeVerdictCopy.textContent = "Route comparison requires live AERO and VELO prices plus both on-chain supplies.";
+    return;
+  }
+
   const spread = Math.abs(aeroRoutePrice - veloRoutePrice);
-  const signedAeroPremium = ((aeroRoutePrice / veloRoutePrice) - 1) * 100;
   const aeroIsCheaper = aeroRoutePrice <= veloRoutePrice;
   const cheaperName = aeroIsCheaper ? "AERO" : "VELO";
   const premiumName = aeroIsCheaper ? "VELO" : "AERO";
@@ -160,42 +245,21 @@ function calculate() {
   const relativeSpread = ((expensive / cheap) - 1) * 100;
   const saving = 10_000 - (10_000 / expensive) * cheap;
 
-  ui.aeroValue.textContent = money(aeroAmount * market.aeroPrice);
-  ui.veloValue.textContent = money(veloAmount * market.veloPrice);
-  ui.total.textContent = format(totalOutput);
-  ui.aeroOutput.textContent = format(aeroOutput);
-  ui.veloOutput.textContent = format(veloOutput);
-  ui.derivedSupply.textContent = compact(supply);
-  ui.veloRatio.textContent = format(veloRatio, 4);
-  ui.aeroRequired.textContent = format(aeroRatio, 4);
-  ui.veloRequired.textContent = format(veloRatio, 4);
-  ui.aeroRoutePrice.textContent = money(aeroRoutePrice, 4);
-  ui.veloRoutePrice.textContent = money(veloRoutePrice, 4);
   ui.spreadDollar.textContent = money(spread, 4);
-  ui.spreadPercent.textContent = `${format(relativeSpread, 2)}%`;
   ui.heroPremium.textContent = `${format(relativeSpread, 2)}%`;
   ui.heroSaving.textContent = money(saving, 0);
   ui.heroPremiumLabel.textContent = `${premiumName} PREMIUM`;
   ui.heroSavingCopy.textContent = `Every $10k routed through ${cheaperName} currently carries about`;
+  ui.heroSavingSuffix.textContent = "of additional entry efficiency.";
   ui.heroRouteName.textContent = cheaperName;
+  ui.heroRouteStamp.hidden = false;
   ui.heroRouteStamp.className = `asset-stamp ${aeroIsCheaper ? "aero-stamp" : "velo-stamp"}`;
   ui.heroRouteLogo.src = aeroIsCheaper ? DATA_SOURCES.aeroLogo : DATA_SOURCES.veloLogo;
   ui.aeroRouteEntry.classList.toggle("winner-entry", aeroIsCheaper);
   ui.veloRouteEntry.classList.toggle("winner-entry", !aeroIsCheaper);
   setRouteSignal(ui.aeroSignal, aeroIsCheaper);
   setRouteSignal(ui.veloSignal, !aeroIsCheaper);
-  ui.cheaperRouteName.textContent = cheaperName;
-  ui.premiumRouteName.textContent = premiumName;
-  ui.comparisonRouteName.textContent = cheaperName;
-
-  Object.values(periods).forEach((series) => {
-    series.data[series.data.length - 1] = signedAeroPremium;
-    series.labels[series.labels.length - 1] = "NOW";
-    if (series.timestamps?.length === series.data.length) {
-      series.timestamps[series.timestamps.length - 1] = Math.floor((market.updatedAt || new Date()).getTime() / 1000);
-    }
-  });
-  drawChart(activePeriod);
+  ui.routeVerdictCopy.innerHTML = `<b>${cheaperName}</b> is the cheaper synthetic entry today. <span>${premiumName}</span> trades <strong>${format(relativeSpread, 2)}%</strong> above the <span>${cheaperName}</span>-implied merger price.`;
 }
 
 function niceStep(range, targetIntervals = 5) {
@@ -260,8 +324,40 @@ function updateChartPoint(index) {
   tooltip.classList.toggle("from-left", horizontal < 0.16);
 }
 
+function renderChartUnavailable(message) {
+  chartState = null;
+  $("#chartGrid").innerHTML = "";
+  $("#chartYAxis").innerHTML = "";
+  $("#chartLabels").innerHTML = "";
+  $("#chartLine").setAttribute("points", "");
+  $("#chartArea").setAttribute("d", "");
+  ["#endGuide", "#endHalo", "#endPoint"].forEach((selector) => {
+    $(selector).style.visibility = "hidden";
+  });
+  $("#chartCallout").hidden = true;
+  $("#chartEmpty").hidden = false;
+  $("#chartEmpty").textContent = message;
+  $("#chartLatest").textContent = "—";
+  $("#chartHigh").textContent = "—";
+  $("#chartAverage").textContent = "—";
+}
+
 function drawChart(period) {
-  const { data, labels } = periods[period];
+  const series = periods[period];
+  const { data, labels } = series;
+  if (!Array.isArray(data) || data.length < 2) {
+    const message = series.state === "loading"
+      ? "LOADING COINBASE CANDLES"
+      : series.error || "LIVE HISTORY UNAVAILABLE";
+    renderChartUnavailable(message);
+    return;
+  }
+
+  $("#chartEmpty").hidden = true;
+  $("#chartCallout").hidden = false;
+  ["#endGuide", "#endHalo", "#endPoint"].forEach((selector) => {
+    $(selector).style.visibility = "visible";
+  });
   const width = 1000;
   const height = 340;
   const top = 22;
@@ -294,7 +390,7 @@ function drawChart(period) {
   const average = data.reduce((sum, value) => sum + value, 0) / data.length;
   $("#chartAverage").textContent = signedPercent(average);
   $("#chartLabels").innerHTML = labels.map((label) => `<span>${label}</span>`).join("");
-  chartState = { data, labels, timestamps: periods[period].timestamps, x, y, width, height };
+  chartState = { data, labels, timestamps: series.timestamps, x, y, width, height };
   updateChartPoint(data.length - 1);
 }
 
@@ -343,11 +439,15 @@ async function fetchTotalSupply(rpcUrl, contract) {
     }),
   });
   if (response.error || !response.result) throw new Error(response.error?.message || "RPC returned no supply");
-  return unitsFromHex(response.result);
+  const supply = unitsFromHex(response.result);
+  if (!isPositive(supply)) throw new Error("RPC returned an invalid supply");
+  return supply;
 }
 
 async function refreshPrices() {
-  setDataStatus("loading", "REFRESHING COINBASE");
+  if (sourceHealth.aeroPrice !== "live") sourceHealth.aeroPrice = "loading";
+  if (sourceHealth.veloPrice !== "live") sourceHealth.veloPrice = "loading";
+  updateDataStatus();
   const [aero, velo] = await Promise.allSettled([
     fetchCoinbaseMarket("AERO-USD"),
     fetchCoinbaseMarket("VELO-USD"),
@@ -356,26 +456,41 @@ async function refreshPrices() {
   if (aero.status === "fulfilled") {
     market.aeroPrice = aero.value.price;
     market.aeroChange = aero.value.change;
-    market.updatedAt = aero.value.time;
+    market.aeroUpdatedAt = aero.value.time;
+    sourceHealth.aeroPrice = "live";
     successes += 1;
   } else {
+    market.aeroPrice = null;
+    market.aeroChange = null;
+    market.aeroUpdatedAt = null;
+    sourceHealth.aeroPrice = "error";
     console.warn("AERO price refresh failed", aero.reason);
   }
   if (velo.status === "fulfilled") {
     market.veloPrice = velo.value.price;
     market.veloChange = velo.value.change;
-    if (!market.updatedAt || velo.value.time > market.updatedAt) market.updatedAt = velo.value.time;
+    market.veloUpdatedAt = velo.value.time;
+    sourceHealth.veloPrice = "live";
     successes += 1;
   } else {
+    market.veloPrice = null;
+    market.veloChange = null;
+    market.veloUpdatedAt = null;
+    sourceHealth.veloPrice = "error";
     console.warn("VELO price refresh failed", velo.reason);
   }
+  const timestamps = [market.aeroUpdatedAt, market.veloUpdatedAt].filter((value) => value instanceof Date && !Number.isNaN(value.getTime()));
+  market.updatedAt = timestamps.length ? new Date(Math.max(...timestamps.map((value) => value.getTime()))) : null;
   updateMarketMeta();
   calculate();
-  setDataStatus(successes === 2 ? "live" : "partial", successes === 2 ? "DIRECT DATA LIVE" : "PARTIAL PRICE DATA");
+  updateDataStatus();
   return successes;
 }
 
 async function refreshSupplies() {
+  if (sourceHealth.aeroSupply !== "live") sourceHealth.aeroSupply = "loading";
+  if (sourceHealth.veloSupply !== "live") sourceHealth.veloSupply = "loading";
+  updateDataStatus();
   const [aero, velo] = await Promise.allSettled([
     fetchTotalSupply(DATA_SOURCES.baseRpc, DATA_SOURCES.aeroContract),
     fetchTotalSupply(DATA_SOURCES.optimismRpc, DATA_SOURCES.veloContract),
@@ -383,19 +498,38 @@ async function refreshSupplies() {
   let successes = 0;
   if (aero.status === "fulfilled") {
     market.aeroSupply = aero.value;
+    sourceHealth.aeroSupply = "live";
     successes += 1;
   } else {
+    market.aeroSupply = null;
+    sourceHealth.aeroSupply = "error";
     console.warn("AERO supply RPC failed", aero.reason);
   }
   if (velo.status === "fulfilled") {
     market.veloSupply = velo.value;
+    sourceHealth.veloSupply = "live";
     successes += 1;
   } else {
+    market.veloSupply = null;
+    sourceHealth.veloSupply = "error";
     console.warn("VELO supply RPC failed", velo.reason);
   }
+  resetHistory(successes === 2 ? null : "ON-CHAIN RATIO UNAVAILABLE");
   calculate();
-  if (successes < 2) setDataStatus("partial", "PARTIAL ON-CHAIN DATA");
+  updateDataStatus();
   return successes;
+}
+
+function resetHistory(error = null) {
+  historyLoaded.clear();
+  Object.values(periods).forEach((series) => {
+    series.data = null;
+    series.labels = [];
+    series.timestamps = [];
+    series.state = error ? "error" : "idle";
+    series.error = error;
+  });
+  drawChart(activePeriod);
 }
 
 function historyWindow(period) {
@@ -441,8 +575,20 @@ async function loadHistory(period) {
     drawChart(period);
     return;
   }
+  const series = periods[period];
+  if (series.state === "loading") return;
+  if (!hasSupplyRatio()) {
+    series.state = "error";
+    series.error = "ON-CHAIN RATIO UNAVAILABLE";
+    if (period === activePeriod) drawChart(period);
+    return;
+  }
+
   const activeButton = $(`.period-switcher button[data-period="${period}"]`);
+  series.state = "loading";
+  series.error = null;
   activeButton.classList.add("loading");
+  if (period === activePeriod) drawChart(period);
   try {
     const [aeroCandles, veloCandles] = await Promise.all([
       fetchCandles("AERO-USD", period),
@@ -452,21 +598,29 @@ async function loadHistory(period) {
     const migrationSupply = market.aeroSupply / market.aeroShare;
     const veloRatio = market.veloSupply / (migrationSupply * market.veloShare);
     const common = aeroCandles
-      .filter((candle) => veloByTime.has(candle[0]))
+      .filter((candle) => veloByTime.has(candle[0]) && isPositive(Number(candle[4])) && isPositive(veloByTime.get(candle[0])))
       .map((candle) => ({
         time: candle[0],
         premium: ((Number(candle[4]) / (veloByTime.get(candle[0]) * veloRatio)) - 1) * 100,
       }))
       .filter((point) => Number.isFinite(point.premium));
     if (common.length < 3) throw new Error("Not enough matching Coinbase candles");
-    periods[period].data = common.map((point) => point.premium);
-    periods[period].labels = chartLabels(common.map((point) => point.time), period);
-    periods[period].timestamps = common.map((point) => point.time);
+    series.data = common.map((point) => point.premium);
+    series.labels = chartLabels(common.map((point) => point.time), period);
+    series.timestamps = common.map((point) => point.time);
+    series.state = "live";
+    series.error = null;
     historyLoaded.add(period);
-    calculate();
+    if (period === activePeriod) drawChart(period);
   } catch (error) {
     console.warn(`${period} history refresh failed`, error);
-    drawChart(period);
+    series.data = null;
+    series.labels = [];
+    series.timestamps = [];
+    series.state = "error";
+    series.error = "COINBASE HISTORY UNAVAILABLE";
+    historyLoaded.delete(period);
+    if (period === activePeriod) drawChart(period);
   } finally {
     activeButton.classList.remove("loading");
   }
@@ -485,7 +639,6 @@ $$(".period-switcher button").forEach((button) => {
     $$(".period-switcher button").forEach((item) => item.classList.remove("active"));
     button.classList.add("active");
     activePeriod = button.dataset.period;
-    drawChart(activePeriod);
     loadHistory(activePeriod);
   });
 });
@@ -538,9 +691,14 @@ $$('.entrance, .reveal').forEach((element) => observer.observe(element));
 
 calculate();
 updateMarketMeta();
+updateDataStatus();
+renderChartUnavailable("LOADING LIVE HISTORY");
 tick();
 setInterval(tick, 1000);
 
 Promise.allSettled([refreshPrices(), refreshSupplies()]).then(() => loadHistory(activePeriod));
 setInterval(refreshPrices, 30_000);
-setInterval(refreshSupplies, 300_000);
+setInterval(async () => {
+  await refreshSupplies();
+  await loadHistory(activePeriod);
+}, 300_000);
