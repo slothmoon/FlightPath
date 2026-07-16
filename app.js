@@ -72,6 +72,7 @@ const periods = {
 
 let activePeriod = "30D";
 const historyLoaded = new Set();
+let chartState = null;
 
 const number = (value) => {
   const parsed = Number(String(value).replace(/,/g, ""));
@@ -190,6 +191,9 @@ function calculate() {
   Object.values(periods).forEach((series) => {
     series.data[series.data.length - 1] = signedAeroPremium;
     series.labels[series.labels.length - 1] = "NOW";
+    if (series.timestamps?.length === series.data.length) {
+      series.timestamps[series.timestamps.length - 1] = Math.floor((market.updatedAt || new Date()).getTime() / 1000);
+    }
   });
   drawChart(activePeriod);
 }
@@ -206,6 +210,54 @@ function formatAxisTick(value, step) {
   if (Math.abs(value) < Number.EPSILON) return "0%";
   const digits = step < 1 ? 1 : 0;
   return `${value > 0 ? "+" : ""}${value.toFixed(digits)}%`;
+}
+
+function formatTooltipDate(timestamp, fallback) {
+  if (!timestamp) return fallback || "NOW";
+  return `${new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Kolkata",
+  }).format(new Date(timestamp * 1000)).replace(",", " ·").toUpperCase()} IST`;
+}
+
+function updateChartPoint(index) {
+  if (!chartState) return;
+  const safeIndex = Math.max(0, Math.min(chartState.data.length - 1, index));
+  const value = chartState.data[safeIndex];
+  const pointX = chartState.x(safeIndex);
+  const pointY = chartState.y(value);
+  const horizontal = pointX / chartState.width;
+  const aeroIsPremium = value >= 0;
+  const cheaperRoute = aeroIsPremium ? "VELO" : "AERO";
+  const discount = aeroIsPremium
+    ? (1 - (1 / (1 + value / 100))) * 100
+    : Math.abs(value);
+
+  $("#endGuide").setAttribute("x1", pointX);
+  $("#endGuide").setAttribute("x2", pointX);
+  $("#endHalo").setAttribute("cx", pointX);
+  $("#endHalo").setAttribute("cy", pointY);
+  $("#endPoint").setAttribute("cx", pointX);
+  $("#endPoint").setAttribute("cy", pointY);
+  $("#chartTooltipRoute").textContent = `${cheaperRoute} CHEAPER`;
+  $("#chartTooltipValue").textContent = `${Math.abs(discount).toFixed(2)}% DISCOUNT`;
+  $("#chartTooltipMetric").textContent = `AERO PREMIUM ${signedPercent(value)}`;
+  $("#chartTooltipDate").textContent = formatTooltipDate(
+    chartState.timestamps?.[safeIndex],
+    chartState.labels?.[safeIndex],
+  );
+
+  const tooltip = $("#chartCallout");
+  const renderedHeight = $("#historyChart").getBoundingClientRect().height || chartState.height;
+  tooltip.style.left = `${horizontal * 100}%`;
+  tooltip.style.right = "auto";
+  tooltip.style.top = `${(pointY / chartState.height) * renderedHeight}px`;
+  tooltip.classList.toggle("from-left", horizontal < 0.16);
 }
 
 function drawChart(period) {
@@ -229,7 +281,6 @@ function drawChart(period) {
   const y = (value) => top + ((max - value) / (max - min)) * (height - top - bottom);
   const points = data.map((value, index) => `${x(index)},${y(value)}`);
   const latest = data.at(-1);
-  const lastY = y(latest);
   $("#chartGrid").innerHTML = ticks.map((tick) => {
     const position = y(tick);
     const className = tick === 0 ? ' class="zero"' : "";
@@ -238,15 +289,13 @@ function drawChart(period) {
   $("#chartYAxis").innerHTML = ticks.map((tick) => `<span>${formatAxisTick(tick, step)}</span>`).join("");
   $("#chartLine").setAttribute("points", points.join(" "));
   $("#chartArea").setAttribute("d", `M${points[0]} L${points.slice(1).join(" L")} L${width},${height - bottom} L0,${height - bottom} Z`);
-  $("#endHalo").setAttribute("cy", lastY);
-  $("#endPoint").setAttribute("cy", lastY);
-  $("#chartCallout").style.top = `${(lastY / height) * 340}px`;
-  $("#chartCallout strong").textContent = signedPercent(latest);
   $("#chartLatest").textContent = signedPercent(latest);
   $("#chartHigh").textContent = signedPercent(Math.max(...data));
   const average = data.reduce((sum, value) => sum + value, 0) / data.length;
   $("#chartAverage").textContent = signedPercent(average);
   $("#chartLabels").innerHTML = labels.map((label) => `<span>${label}</span>`).join("");
+  chartState = { data, labels, timestamps: periods[period].timestamps, x, y, width, height };
+  updateChartPoint(data.length - 1);
 }
 
 async function fetchJson(url, options = {}, timeoutMs = 10_000) {
@@ -412,6 +461,7 @@ async function loadHistory(period) {
     if (common.length < 3) throw new Error("Not enough matching Coinbase candles");
     periods[period].data = common.map((point) => point.premium);
     periods[period].labels = chartLabels(common.map((point) => point.time), period);
+    periods[period].timestamps = common.map((point) => point.time);
     historyLoaded.add(period);
     calculate();
   } catch (error) {
@@ -438,6 +488,18 @@ $$(".period-switcher button").forEach((button) => {
     drawChart(activePeriod);
     loadHistory(activePeriod);
   });
+});
+
+$("#historyChart").addEventListener("pointermove", (event) => {
+  if (!chartState) return;
+  const bounds = event.currentTarget.getBoundingClientRect();
+  const horizontal = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
+  const index = Math.round(horizontal * (chartState.data.length - 1));
+  updateChartPoint(index);
+});
+
+$("#historyChart").addEventListener("pointerleave", () => {
+  if (chartState) updateChartPoint(chartState.data.length - 1);
 });
 
 function tick() {

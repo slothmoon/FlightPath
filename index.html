@@ -243,6 +243,7 @@
                   <stop offset="1" stop-color="#1b40ff" stop-opacity="0" />
                 </linearGradient>
               </defs>
+              <rect class="chart-hit-area" x="0" y="0" width="1000" height="340" />
               <g class="chart-grid" id="chartGrid">
                 <line x1="0" y1="22" x2="1000" y2="22" />
                 <line x1="0" y1="117" x2="1000" y2="117" />
@@ -255,7 +256,12 @@
               <circle id="endHalo" class="end-halo" cx="1000" cy="0" r="11" />
               <circle id="endPoint" class="end-point" cx="1000" cy="0" r="4" />
             </svg>
-            <div class="chart-callout" id="chartCallout"><span>NOW</span><strong>+4.31%</strong></div>
+            <div class="chart-callout" id="chartCallout">
+              <span id="chartTooltipRoute">VELO CHEAPER</span>
+              <strong id="chartTooltipValue">4.13% DISCOUNT</strong>
+              <small id="chartTooltipMetric">AERO PREMIUM +4.31%</small>
+              <small id="chartTooltipDate">NOW</small>
+            </div>
             <div class="chart-x-axis" id="chartLabels"></div>
           </div>
         </div>
