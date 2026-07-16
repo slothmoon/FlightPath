@@ -194,22 +194,48 @@ function calculate() {
   drawChart(activePeriod);
 }
 
+function niceStep(range, targetIntervals = 5) {
+  const rough = Math.max(range / targetIntervals, Number.EPSILON);
+  const magnitude = 10 ** Math.floor(Math.log10(rough));
+  const normalized = rough / magnitude;
+  const multiplier = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+  return multiplier * magnitude;
+}
+
+function formatAxisTick(value, step) {
+  if (Math.abs(value) < Number.EPSILON) return "0%";
+  const digits = step < 1 ? 1 : 0;
+  return `${value > 0 ? "+" : ""}${value.toFixed(digits)}%`;
+}
+
 function drawChart(period) {
   const { data, labels } = periods[period];
   const width = 1000;
   const height = 340;
   const top = 22;
   const bottom = 33;
-  const min = -5;
-  const max = 10;
+  const observedMin = Math.min(0, ...data);
+  const observedMax = Math.max(0, ...data);
+  const observedRange = Math.max(observedMax - observedMin, 1);
+  const padding = observedRange * 0.08;
+  const step = niceStep(observedRange + (padding * 2));
+  const min = Math.floor((observedMin - padding) / step) * step;
+  const max = Math.ceil((observedMax + padding) / step) * step;
+  const ticks = [];
+  for (let tick = max; tick >= min - (step / 1000); tick -= step) {
+    ticks.push(Math.abs(tick) < step / 1000 ? 0 : tick);
+  }
   const x = (index) => index * (width / (data.length - 1));
-  const y = (value) => {
-    const bounded = Math.max(min, Math.min(max, value));
-    return top + ((max - bounded) / (max - min)) * (height - top - bottom);
-  };
+  const y = (value) => top + ((max - value) / (max - min)) * (height - top - bottom);
   const points = data.map((value, index) => `${x(index)},${y(value)}`);
   const latest = data.at(-1);
   const lastY = y(latest);
+  $("#chartGrid").innerHTML = ticks.map((tick) => {
+    const position = y(tick);
+    const className = tick === 0 ? ' class="zero"' : "";
+    return `<line${className} x1="0" y1="${position}" x2="${width}" y2="${position}" />`;
+  }).join("");
+  $("#chartYAxis").innerHTML = ticks.map((tick) => `<span>${formatAxisTick(tick, step)}</span>`).join("");
   $("#chartLine").setAttribute("points", points.join(" "));
   $("#chartArea").setAttribute("d", `M${points[0]} L${points.slice(1).join(" L")} L${width},${height - bottom} L0,${height - bottom} Z`);
   $("#endHalo").setAttribute("cy", lastY);

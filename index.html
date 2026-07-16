@@ -235,7 +235,7 @@
             <p>Above zero, VELO is cheaper.<br />Below zero, AERO is cheaper.<br /><br />Coinbase candles · current on-chain migration ratio.</p>
           </aside>
           <div class="chart-frame">
-            <div class="chart-y-axis"><span>+10%</span><span>+5%</span><span>0%</span><span>−5%</span></div>
+            <div class="chart-y-axis" id="chartYAxis"><span>+10%</span><span>+5%</span><span>0%</span><span>−5%</span></div>
             <svg id="historyChart" viewBox="0 0 1000 340" preserveAspectRatio="none" role="img" aria-label="AERO premium to VELO chart">
               <defs>
                 <linearGradient id="areaFade" x1="0" y1="0" x2="0" y2="1">
@@ -243,7 +243,7 @@
                   <stop offset="1" stop-color="#1b40ff" stop-opacity="0" />
                 </linearGradient>
               </defs>
-              <g class="chart-grid">
+              <g class="chart-grid" id="chartGrid">
                 <line x1="0" y1="22" x2="1000" y2="22" />
                 <line x1="0" y1="117" x2="1000" y2="117" />
                 <line class="zero" x1="0" y1="212" x2="1000" y2="212" />
