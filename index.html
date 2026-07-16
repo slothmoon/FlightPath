@@ -17,12 +17,12 @@
       </a>
 
       <div class="header-tape" aria-label="Market snapshot">
-        <div><span>AERO / USD</span><strong>$0.4923</strong><em>+2.84</em></div>
-        <div><span>VELO / USD</span><strong>$0.0210</strong><em>+5.17</em></div>
+        <div><span>AERO / USD</span><strong id="aeroHeaderPrice">$0.4923</strong><em id="aeroHeaderChange">—</em></div>
+        <div><span>VELO / USD</span><strong id="veloHeaderPrice">$0.0210</strong><em id="veloHeaderChange">—</em></div>
       </div>
 
       <div class="header-status">
-        <span class="live-mark"><i></i> MARKET SNAPSHOT</span>
+        <span class="live-mark loading"><i></i><b id="dataStatus">LOADING DIRECT DATA</b></span>
         <time id="localClock">00:00:00 IST</time>
       </div>
 
@@ -63,22 +63,22 @@
         <div class="signal-card entrance delay-3">
           <div class="signal-card-label">
             <span>TODAY'S ROUTE SIGNAL</span>
-            <span>16 JUL 2026</span>
+            <span id="snapshotDate">AWAITING MARKET DATA</span>
           </div>
           <div class="signal-layout">
             <div class="signal-route">
-              <span class="asset-stamp velo-stamp"><img src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span>
+              <span class="asset-stamp velo-stamp" id="heroRouteStamp"><img id="heroRouteLogo" src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span>
               <div>
                 <small>LOWEST IMPLIED PRICE</small>
-                <strong>VELO</strong>
+                <strong id="heroRouteName">VELO</strong>
               </div>
             </div>
             <div class="signal-spread">
-              <span>AERO PREMIUM</span>
+              <span id="heroPremiumLabel">AERO PREMIUM</span>
               <strong id="heroPremium">4.31%</strong>
             </div>
             <div class="signal-copy">
-              <p>Every $10k routed through VELO currently carries about</p>
+              <p id="heroSavingCopy">Every $10k routed through VELO currently carries about</p>
               <strong id="heroSaving">$413</strong>
               <span>of additional entry efficiency.</span>
             </div>
@@ -187,18 +187,18 @@
               <span>ROUTE</span><span>REQUIRED INPUT</span><span>IMPLIED UNIT PRICE</span><span>SIGNAL</span>
             </div>
 
-            <article class="route-entry">
+            <article class="route-entry" id="aeroRouteEntry">
               <div class="route-asset"><span class="asset-stamp aero-stamp"><img src="https://aerodrome.finance/brand-kit/AERO/symbol.svg" alt="" /></span><strong>AERO</strong></div>
-              <div><strong id="aeroRequired">1.0267</strong><span>AERO</span></div>
-              <div><strong id="aeroRoutePrice">$0.5054</strong><span>PER NEW TOKEN</span></div>
-              <div class="route-signal premium"><i></i>PREMIUM</div>
+              <div><strong id="aeroRequired">1.0000</strong><span>AERO</span></div>
+              <div><strong id="aeroRoutePrice">$0.4923</strong><span>PER NEW TOKEN</span></div>
+              <div class="route-signal premium" id="aeroSignal"><i></i>PREMIUM</div>
             </article>
 
-            <article class="route-entry winner-entry">
+            <article class="route-entry winner-entry" id="veloRouteEntry">
               <div class="route-asset"><span class="asset-stamp velo-stamp"><img src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span><strong>VELO</strong></div>
-              <div><strong id="veloRequired">23.1244</strong><span>VELO</span></div>
-              <div><strong id="veloRoutePrice">$0.4846</strong><span>PER NEW TOKEN</span></div>
-              <div class="route-signal efficient"><i></i>BEST ROUTE</div>
+              <div><strong id="veloRequired">22.5232</strong><span>VELO</span></div>
+              <div><strong id="veloRoutePrice">$0.4721</strong><span>PER NEW TOKEN</span></div>
+              <div class="route-signal efficient" id="veloSignal"><i></i>BEST ROUTE</div>
             </article>
 
             <div class="route-verdict">
@@ -206,7 +206,7 @@
                 <span>ABSOLUTE SPREAD</span>
                 <strong id="spreadDollar">$0.0209</strong>
               </div>
-              <p><b>VELO</b> is the cheaper synthetic entry today. AERO trades <strong id="spreadPercent">4.31%</strong> above the VELO-implied merger price.</p>
+              <p><b id="cheaperRouteName">VELO</b> is the cheaper synthetic entry today. <span id="premiumRouteName">AERO</span> trades <strong id="spreadPercent">4.31%</strong> above the <span id="comparisonRouteName">VELO</span>-implied merger price.</p>
               <span class="verdict-arrow">↘</span>
             </div>
           </div>
@@ -232,7 +232,7 @@
             <div><span>LATEST</span><strong id="chartLatest">+4.31%</strong></div>
             <div><span>PERIOD HIGH</span><strong id="chartHigh">+6.10%</strong></div>
             <div><span>PERIOD AVG.</span><strong id="chartAverage">+3.76%</strong></div>
-            <p>Above zero, VELO is cheaper.<br />Below zero, AERO is cheaper.</p>
+            <p>Above zero, VELO is cheaper.<br />Below zero, AERO is cheaper.<br /><br />Coinbase candles · current on-chain migration ratio.</p>
           </aside>
           <div class="chart-frame">
             <div class="chart-y-axis"><span>+10%</span><span>+5%</span><span>0%</span><span>−5%</span></div>
@@ -335,7 +335,7 @@
         <p>AERO × VELO Migration Desk · Unofficial model</p>
       </div>
       <div class="footer-data">
-        <span>DATA / COINBASE + ON-CHAIN SUPPLY</span>
+        <span>DIRECT DATA / COINBASE + BASE + OPTIMISM RPC</span>
         <span>INDICATIVE MODEL · NOT FINANCIAL ADVICE</span>
       </div>
     </footer>

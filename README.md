@@ -2,6 +2,8 @@
 
 An unofficial AERO × VELO migration desk: responsive position modeling, route pricing, historical premium analysis, and official liquid/staked migration paths with no external runtime dependencies.
 
+Market data is fetched entirely in the visitor's browser: Coinbase Exchange REST endpoints provide prices and candles, while direct Base and Optimism JSON-RPC calls read the AERO and VELO `totalSupply()` values. Flightpath has no application backend or serverless API.
+
 ## Run locally
 
 ```powershell
