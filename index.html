@@ -32,6 +32,7 @@
       <nav class="mobile-nav" id="mobileNav">
         <a href="#model">Model</a>
         <a href="#routes">Routes</a>
+        <a href="#history">History</a>
         <a href="#migration">Migration</a>
       </nav>
     </header>
@@ -53,8 +54,8 @@
           <div class="hero-brief entrance delay-2">
             <span class="big-arrow" aria-hidden="true">↘</span>
             <p>
-              Compare both conversion paths, model your final position, and see
-              the economics before the two ecosystems converge.
+              AERO converts 1:1. VELO converts at an estimated supply-based
+              ratio. Compare today's cost of reaching new AERO through either route.
             </p>
             <a href="#model">BUILD A POSITION <b>↓</b></a>
           </div>
@@ -62,14 +63,14 @@
 
         <div class="signal-card entrance delay-3">
           <div class="signal-card-label">
-            <span>TODAY'S ROUTE SIGNAL</span>
+            <span>TODAY'S ROUTE COMPARISON</span>
             <span id="snapshotDate">AWAITING MARKET DATA</span>
           </div>
           <div class="signal-layout">
             <div class="signal-route">
               <span class="asset-stamp velo-stamp" id="heroRouteStamp" hidden><img id="heroRouteLogo" src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span>
               <div>
-                <small>LOWEST IMPLIED PRICE</small>
+                <small>LOWEST EST. COST</small>
                 <strong id="heroRouteName">UNAVAILABLE</strong>
               </div>
             </div>
@@ -78,10 +79,14 @@
               <strong id="heroPremium">—</strong>
             </div>
             <div class="signal-copy">
-              <p id="heroSavingCopy">Live prices and both on-chain supplies are required.</p>
+              <p id="heroSavingCopy">EFFECTIVE DISCOUNT UNAVAILABLE</p>
               <strong id="heroSaving">—</strong>
-              <span id="heroSavingSuffix">No fallback values are shown.</span>
+              <span id="heroSavingSuffix">Live prices and both supply feeds are required.</span>
             </div>
+          </div>
+          <div class="signal-source-note">
+            <span class="live-mark loading"><i></i><b id="mobileDataStatus">LOADING DIRECT DATA</b></span>
+            <span>COINBASE + BASE + OPTIMISM RPC</span>
           </div>
         </div>
       </section>
@@ -93,13 +98,13 @@
             <span class="overline">POSITION MODEL</span>
             <h2 id="modelTitle">Build your<br />merged position.</h2>
           </div>
-          <p>Enter what you hold. AERO upgrades 1:1; VELO converts into its fixed 5.5% share of the launch supply.</p>
+          <p>Enter what you hold. AERO converts 1:1; VELO uses an estimated supply-based ratio that becomes final at migration.</p>
         </div>
 
         <div class="conversion-desk reveal">
           <div class="desk-meta">
             <span>INPUT ASSETS</span>
-            <span>EST. VALUE</span>
+            <span>CURRENT USD VALUE</span>
             <button id="resetButton" type="button">RESET MODEL</button>
           </div>
 
@@ -132,10 +137,10 @@
           </div>
 
           <div class="output-panel">
-            <div class="output-label"><span>YOUR ESTIMATED OUTPUT</span><i>CALCULATED</i></div>
+            <div class="output-label"><span>ESTIMATED NEW AERO</span><i>ESTIMATE · NOT FINAL</i></div>
             <div class="output-total">
               <strong id="totalOutput">—</strong>
-              <span>NEW TOKENS</span>
+              <span>NEW AERO</span>
             </div>
             <div class="output-split">
               <div><span>AERO contribution</span><strong id="aeroOutput">—</strong></div>
@@ -145,19 +150,19 @@
               <span id="aeroAllocationBar"></span><span id="veloAllocationBar"></span>
             </div>
             <div class="allocation-key">
-              <span><i class="key-aero"></i>94.5% AERO allocation</span>
-              <span><i class="key-velo"></i>5.5% VELO allocation</span>
+              <span><i class="key-aero"></i><b id="aeroAllocationLabel">AERO OUTPUT SHARE —</b></span>
+              <span><i class="key-velo"></i><b id="veloAllocationLabel">VELO OUTPUT SHARE —</b></span>
             </div>
           </div>
 
           <div class="basis-bar">
             <div>
-              <span>OFFICIAL SUPPLY FORMULA</span>
+              <span>OFFICIAL ALLOCATION FORMULA</span>
               <strong>AERO supply ÷ 94.5%</strong>
             </div>
-            <p>The launch ratio becomes final after the shared migration epoch. This desk uses the latest displayed supplies as an estimate.</p>
+            <p>Uses the protocol's 94.5% AERO / 5.5% VELO launch allocation with current on-chain supplies. The conversion ratio becomes final at migration.</p>
             <div>
-              <span>EST. INITIAL SUPPLY</span>
+              <span>EST. LAUNCH SUPPLY</span>
               <strong id="derivedSupply">—</strong>
             </div>
           </div>
@@ -165,8 +170,8 @@
 
         <div class="model-facts reveal">
           <div><span>01 / AERO UPGRADE</span><strong>1 : 1</strong><small>One old AERO becomes one new AERO</small></div>
-          <div><span>02 / VELO ESTIMATE</span><strong id="veloRatio">—</strong><small>VELO required per new AERO</small></div>
-          <div><span>03 / INITIAL ALLOCATION</span><strong>94.5 / 5.5</strong><small>Aerodrome share / Velodrome share</small></div>
+          <div><span>02 / EST. VELO CONVERSION RATIO</span><strong id="veloRatio">—</strong><small>VELO required per new AERO</small></div>
+          <div><span>03 / NETWORK LAUNCH ALLOCATION</span><strong>94.5 / 5.5</strong><small>Protocol allocation—not your position split</small></div>
           <div><span>04 / ESTIMATE STATUS</span><strong class="status-value">NOT FINAL</strong><small>Finalized at the migration epoch</small></div>
         </div>
       </section>
@@ -179,31 +184,31 @@
               <span class="overline">ROUTE PRICING</span>
               <h2 id="routesTitle">Price decides<br />the way in.</h2>
             </div>
-            <p>Both assets mint the same destination. They do not buy it at the same price.</p>
+            <p>Both routes estimate the current cost of receiving one new AERO. The final VELO ratio is not yet set.</p>
           </div>
 
           <div class="route-board reveal">
             <div class="route-board-head">
-              <span>ROUTE</span><span>REQUIRED INPUT</span><span>IMPLIED UNIT PRICE</span><span>SIGNAL</span>
+              <span>ROUTE</span><span>INPUT PER NEW AERO</span><span>CURRENT COST PER NEW AERO</span><span>SIGNAL</span>
             </div>
 
             <article class="route-entry" id="aeroRouteEntry">
               <div class="route-asset"><span class="asset-stamp aero-stamp"><img src="https://aerodrome.finance/brand-kit/AERO/symbol.svg" alt="" /></span><strong>AERO</strong></div>
               <div><strong id="aeroRequired">1.0000</strong><span>AERO</span></div>
-              <div><strong id="aeroRoutePrice">—</strong><span>PER NEW TOKEN</span></div>
+              <div><strong id="aeroRoutePrice">—</strong><span>PER NEW AERO</span></div>
               <div class="route-signal unavailable" id="aeroSignal"><i></i>DATA UNAVAILABLE</div>
             </article>
 
             <article class="route-entry" id="veloRouteEntry">
               <div class="route-asset"><span class="asset-stamp velo-stamp"><img src="https://velodrome.finance/brand-kit/VELO/symbol.svg" alt="" /></span><strong>VELO</strong></div>
               <div><strong id="veloRequired">—</strong><span>VELO</span></div>
-              <div><strong id="veloRoutePrice">—</strong><span>PER NEW TOKEN</span></div>
+              <div><strong id="veloRoutePrice">—</strong><span>PER NEW AERO</span></div>
               <div class="route-signal unavailable" id="veloSignal"><i></i>DATA UNAVAILABLE</div>
             </article>
 
             <div class="route-verdict">
               <div>
-                <span>ABSOLUTE SPREAD</span>
+                <span>SPREAD PER NEW AERO</span>
                 <strong id="spreadDollar">—</strong>
               </div>
               <p id="routeVerdictCopy">Route comparison requires live AERO and VELO prices plus both on-chain supplies.</p>
@@ -213,7 +218,7 @@
         </div>
       </section>
 
-      <section class="history-section" aria-labelledby="historyTitle">
+      <section class="history-section" id="history" aria-labelledby="historyTitle">
         <div class="history-head reveal">
           <div>
             <span class="overline">RELATIVE PRICE HISTORY</span>
@@ -229,10 +234,10 @@
 
         <div class="history-body reveal">
           <aside class="history-stats">
-            <div><span>LATEST</span><strong id="chartLatest">—</strong></div>
+            <div><span>LATEST CANDLE</span><strong id="chartLatest">—</strong><small id="chartLatestTime">—</small></div>
             <div><span>PERIOD HIGH</span><strong id="chartHigh">—</strong></div>
             <div><span>PERIOD AVG.</span><strong id="chartAverage">—</strong></div>
-            <p>Above zero, VELO is cheaper.<br />Below zero, AERO is cheaper.<br /><br />Coinbase candles · current on-chain migration ratio.</p>
+            <p>Above zero, VELO is cheaper.<br />Below zero, AERO is cheaper.<br /><br />Coinbase closing prices · today's on-chain conversion ratio applied across the selected period.<br /><br /><b id="historyResolution">30D · 6-HOUR CANDLES</b></p>
           </aside>
           <div class="chart-frame">
             <div class="chart-y-axis" id="chartYAxis"></div>
@@ -296,9 +301,9 @@
             <ol class="path-steps">
               <li><span>01</span><p>Connect the wallet holding your liquid tokens.</p></li>
               <li><span>02</span><p>Upgrade AERO 1:1 or VELO at the finalized migration ratio.</p></li>
-              <li><span>03</span><p>Receive the upgraded AERO token on Aero.</p></li>
+              <li><span>03</span><p>Receive new AERO in the connected wallet.</p></li>
             </ol>
-            <div class="path-note"><strong>NO DEADLINE</strong><span>The migration contract is expected to remain available after launch.</span></div>
+            <div class="path-note"><strong>NO PLANNED DEADLINE</strong><span>The migration contract is expected to remain available after launch.</span></div>
           </article>
 
           <article class="migration-card staked-card">
@@ -309,29 +314,29 @@
             <div class="migration-card-title">
               <div class="nft-stamp">veNFT</div>
               <h3>veAERO + veVELO</h3>
-              <p>Locked positions become new sAERO NFTs while preserving their economic term.</p>
+              <p>Locked positions become new sAERO NFTs while preserving their remaining lock duration.</p>
             </div>
             <ol class="path-steps">
-              <li><span>01</span><p>Withdraw veNFTs from Relay or any external custody contract.</p></li>
+              <li><span>01</span><p>If deposited with Relay or another custodian, withdraw the veNFT first.</p></li>
               <li><span>02</span><p>Claim all pending rewards before starting migration.</p></li>
               <li><span>03</span><p>Burn the old veNFT and mint a new sAERO position.</p></li>
             </ol>
-            <div class="path-note"><strong>TERM PRESERVED</strong><span>Converted token amount and remaining staking term carry forward.</span></div>
+            <div class="path-note"><strong>LOCK PRESERVED</strong><span>Converted token amount and remaining lock duration carry forward.</span></div>
           </article>
 
           <article class="migration-wide-card">
             <div>
               <span class="overline">WHAT CHANGES AFTER LAUNCH</span>
-              <h3>No voting. No epochs.</h3>
+              <h3>Weekly voting and epochs are replaced.</h3>
             </div>
-            <p>Weekly voting is replaced by Predictive Allocation. sAERO operators allocate rewards on a rolling cadence and receive exchange revenue as it accrues.</p>
+            <p>Under Predictive Allocation, sAERO operators adjust reward allocations on a rolling cadence and receive exchange revenue as it accrues.</p>
             <div class="change-list">
               <span><b>48H</b> initial reallocation window</span>
               <span><b>LIVE</b> revenue distribution</span>
               <span><b>ZERO</b> sAERO rebases</span>
             </div>
             <div class="source-link-wrap">
-              <span>Source updated from official Aero migration documentation</span>
+              <span>Migration mechanics summarized from official Aero documentation</span>
               <a href="https://aero.xyz/articles/aero-economic-case/" target="_blank" rel="noreferrer">READ OFFICIAL DETAILS ↗</a>
             </div>
           </article>
@@ -347,7 +352,7 @@
       </div>
       <div class="footer-data">
         <span>DIRECT DATA / COINBASE + BASE + OPTIMISM RPC</span>
-        <span>INDICATIVE MODEL · NOT FINANCIAL ADVICE</span>
+        <span>ESTIMATED RATIO · NOT FINAL · NOT FINANCIAL ADVICE</span>
       </div>
     </footer>
 

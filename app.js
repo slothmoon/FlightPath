@@ -48,6 +48,10 @@ const ui = {
   total: $("#totalOutput"),
   aeroOutput: $("#aeroOutput"),
   veloOutput: $("#veloOutput"),
+  aeroAllocationBar: $("#aeroAllocationBar"),
+  veloAllocationBar: $("#veloAllocationBar"),
+  aeroAllocationLabel: $("#aeroAllocationLabel"),
+  veloAllocationLabel: $("#veloAllocationLabel"),
   derivedSupply: $("#derivedSupply"),
   veloRatio: $("#veloRatio"),
   aeroRequired: $("#aeroRequired"),
@@ -73,7 +77,10 @@ const ui = {
   aeroHeaderChange: $("#aeroHeaderChange"),
   veloHeaderChange: $("#veloHeaderChange"),
   dataStatus: $("#dataStatus"),
+  mobileDataStatus: $("#mobileDataStatus"),
   snapshotDate: $("#snapshotDate"),
+  chartLatestTime: $("#chartLatestTime"),
+  historyResolution: $("#historyResolution"),
 };
 
 const periods = {
@@ -81,6 +88,13 @@ const periods = {
   "7D": { data: null, labels: [], timestamps: [], state: "idle", error: null },
   "30D": { data: null, labels: [], timestamps: [], state: "idle", error: null },
   "1Y": { data: null, labels: [], timestamps: [], state: "idle", error: null },
+};
+
+const periodResolution = {
+  "24H": "24H · 1-HOUR CANDLES",
+  "7D": "7D · 6-HOUR CANDLES",
+  "30D": "30D · 6-HOUR CANDLES",
+  "1Y": "1Y · DAILY CANDLES",
 };
 
 let activePeriod = "30D";
@@ -157,7 +171,7 @@ function updateMarketMeta() {
       hour12: false,
       timeZone: "Asia/Kolkata",
     }).format(market.updatedAt).replace(",", " ·").toUpperCase();
-    ui.snapshotDate.textContent = timestamp;
+    ui.snapshotDate.textContent = `PRICES AS OF ${timestamp} IST`;
   } else if (livePrices > 0) {
     ui.snapshotDate.textContent = "PARTIAL COINBASE DATA";
   } else {
@@ -166,10 +180,12 @@ function updateMarketMeta() {
 }
 
 function setDataStatus(state, text) {
-  const wrapper = ui.dataStatus.closest(".live-mark");
-  wrapper.classList.remove("loading", "partial", "unavailable");
-  if (state !== "live") wrapper.classList.add(state);
-  ui.dataStatus.textContent = text;
+  [ui.dataStatus, ui.mobileDataStatus].filter(Boolean).forEach((element) => {
+    const wrapper = element.closest(".live-mark");
+    wrapper.classList.remove("loading", "partial", "unavailable");
+    if (state !== "live") wrapper.classList.add(state);
+    element.textContent = text;
+  });
 }
 
 function updateDataStatus() {
@@ -189,9 +205,12 @@ function updateDataStatus() {
       : `${liveCount}/${entries.length} DATA FEEDS LIVE`;
     setDataStatus("partial", partialText);
   }
-  ui.dataStatus.closest(".live-mark").title = entries
+  const sourceSummary = entries
     .map(([source, state]) => `${sourceLabels[source]}: ${state.toUpperCase()}`)
     .join(" · ");
+  [ui.dataStatus, ui.mobileDataStatus].filter(Boolean).forEach((element) => {
+    element.closest(".live-mark").title = sourceSummary;
+  });
 }
 
 function calculate() {
@@ -212,6 +231,16 @@ function calculate() {
   setText(ui.total, totalOutput, (value) => format(value));
   ui.aeroOutput.textContent = format(aeroOutput);
   setText(ui.veloOutput, veloOutput, (value) => format(value));
+  const aeroOutputShare = isPositive(totalOutput) ? (aeroOutput / totalOutput) * 100 : null;
+  const veloOutputShare = isPositive(totalOutput) ? (veloOutput / totalOutput) * 100 : null;
+  ui.aeroAllocationBar.style.width = Number.isFinite(aeroOutputShare) ? `${aeroOutputShare}%` : "0%";
+  ui.veloAllocationBar.style.width = Number.isFinite(veloOutputShare) ? `${veloOutputShare}%` : "0%";
+  ui.aeroAllocationLabel.textContent = Number.isFinite(aeroOutputShare)
+    ? `${format(aeroOutputShare, 1)}% FROM AERO`
+    : "AERO OUTPUT SHARE —";
+  ui.veloAllocationLabel.textContent = Number.isFinite(veloOutputShare)
+    ? `${format(veloOutputShare, 1)}% FROM VELO`
+    : "VELO OUTPUT SHARE —";
   setText(ui.derivedSupply, supply, (value) => compact(value));
   setText(ui.veloRatio, veloRatio, (value) => format(value, 4));
   ui.aeroRequired.textContent = format(aeroRatio, 4);
@@ -223,9 +252,9 @@ function calculate() {
     ui.spreadDollar.textContent = "—";
     ui.heroPremium.textContent = "—";
     ui.heroSaving.textContent = "—";
-    ui.heroPremiumLabel.textContent = "ROUTE PREMIUM";
-    ui.heroSavingCopy.textContent = "Live prices and both on-chain supplies are required.";
-    ui.heroSavingSuffix.textContent = "No fallback values are shown.";
+    ui.heroPremiumLabel.textContent = "ROUTE PRICE PREMIUM";
+    ui.heroSavingCopy.textContent = "EFFECTIVE DISCOUNT UNAVAILABLE";
+    ui.heroSavingSuffix.textContent = "Live prices and both supply feeds are required.";
     ui.heroRouteName.textContent = "UNAVAILABLE";
     ui.heroRouteStamp.hidden = true;
     ui.aeroRouteEntry.classList.remove("winner-entry");
@@ -243,14 +272,15 @@ function calculate() {
   const expensive = Math.max(aeroRoutePrice, veloRoutePrice);
   const cheap = Math.min(aeroRoutePrice, veloRoutePrice);
   const relativeSpread = ((expensive / cheap) - 1) * 100;
-  const saving = 10_000 - (10_000 / expensive) * cheap;
+  const discountRate = (1 - (cheap / expensive)) * 100;
+  const saving = 10_000 * (discountRate / 100);
 
   ui.spreadDollar.textContent = money(spread, 4);
   ui.heroPremium.textContent = `${format(relativeSpread, 2)}%`;
   ui.heroSaving.textContent = money(saving, 0);
-  ui.heroPremiumLabel.textContent = `${premiumName} PREMIUM`;
-  ui.heroSavingCopy.textContent = `Every $10k routed through ${cheaperName} currently carries about`;
-  ui.heroSavingSuffix.textContent = "of additional entry efficiency.";
+  ui.heroPremiumLabel.textContent = `${premiumName} PRICE PREMIUM`;
+  ui.heroSavingCopy.textContent = `${cheaperName} EFFECTIVE DISCOUNT · ${format(discountRate, 2)}%`;
+  ui.heroSavingSuffix.textContent = `SAVED ON EQUIVALENT OUTPUT VS A $10K ${premiumName} PURCHASE`;
   ui.heroRouteName.textContent = cheaperName;
   ui.heroRouteStamp.hidden = false;
   ui.heroRouteStamp.className = `asset-stamp ${aeroIsCheaper ? "aero-stamp" : "velo-stamp"}`;
@@ -259,7 +289,7 @@ function calculate() {
   ui.veloRouteEntry.classList.toggle("winner-entry", !aeroIsCheaper);
   setRouteSignal(ui.aeroSignal, aeroIsCheaper);
   setRouteSignal(ui.veloSignal, !aeroIsCheaper);
-  ui.routeVerdictCopy.innerHTML = `<b>${cheaperName}</b> is the cheaper synthetic entry today. <span>${premiumName}</span> trades <strong>${format(relativeSpread, 2)}%</strong> above the <span>${cheaperName}</span>-implied merger price.`;
+  ui.routeVerdictCopy.innerHTML = `<b>${cheaperName}</b> is the cheaper conversion route. <span>${premiumName}</span> currently costs <strong>${format(relativeSpread, 2)}%</strong> more; the equivalent <span>${cheaperName}</span> discount is <strong>${format(discountRate, 2)}%</strong>.`;
 }
 
 function niceStep(range, targetIntervals = 5) {
@@ -309,8 +339,8 @@ function updateChartPoint(index) {
   $("#endPoint").setAttribute("cx", pointX);
   $("#endPoint").setAttribute("cy", pointY);
   $("#chartTooltipRoute").textContent = `${cheaperRoute} CHEAPER`;
-  $("#chartTooltipValue").textContent = `${Math.abs(discount).toFixed(2)}% DISCOUNT`;
-  $("#chartTooltipMetric").textContent = `AERO PREMIUM ${signedPercent(value)}`;
+  $("#chartTooltipValue").textContent = `AERO PREMIUM ${signedPercent(value)}`;
+  $("#chartTooltipMetric").textContent = `${cheaperRoute} EFFECTIVE DISCOUNT ${Math.abs(discount).toFixed(2)}%`;
   $("#chartTooltipDate").textContent = formatTooltipDate(
     chartState.timestamps?.[safeIndex],
     chartState.labels?.[safeIndex],
@@ -338,8 +368,10 @@ function renderChartUnavailable(message) {
   $("#chartEmpty").hidden = false;
   $("#chartEmpty").textContent = message;
   $("#chartLatest").textContent = "—";
+  ui.chartLatestTime.textContent = "—";
   $("#chartHigh").textContent = "—";
   $("#chartAverage").textContent = "—";
+  ui.historyResolution.textContent = periodResolution[activePeriod];
 }
 
 function drawChart(period) {
@@ -386,10 +418,12 @@ function drawChart(period) {
   $("#chartLine").setAttribute("points", points.join(" "));
   $("#chartArea").setAttribute("d", `M${points[0]} L${points.slice(1).join(" L")} L${width},${height - bottom} L0,${height - bottom} Z`);
   $("#chartLatest").textContent = signedPercent(latest);
+  ui.chartLatestTime.textContent = formatTooltipDate(series.timestamps.at(-1), labels.at(-1));
   $("#chartHigh").textContent = signedPercent(Math.max(...data));
   const average = data.reduce((sum, value) => sum + value, 0) / data.length;
   $("#chartAverage").textContent = signedPercent(average);
   $("#chartLabels").innerHTML = labels.map((label) => `<span>${label}</span>`).join("");
+  ui.historyResolution.textContent = periodResolution[period];
   chartState = { data, labels, timestamps: series.timestamps, x, y, width, height };
   updateChartPoint(data.length - 1);
 }
@@ -639,6 +673,7 @@ $$(".period-switcher button").forEach((button) => {
     $$(".period-switcher button").forEach((item) => item.classList.remove("active"));
     button.classList.add("active");
     activePeriod = button.dataset.period;
+    ui.historyResolution.textContent = periodResolution[activePeriod];
     loadHistory(activePeriod);
   });
 });
