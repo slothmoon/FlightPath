@@ -312,7 +312,6 @@ footer { width: var(--page); min-height: 230px; margin: auto; padding: 50px 0; d
   .period-switcher { width: 100%; }.period-switcher button { width: auto; }
   .history-stats { gap: 16px; }.history-stats strong { font-size: 18px; }
   .chart-x-axis span:nth-child(even) { display: none; }
-  .chart-callout { width: 118px; padding: 8px 9px; gap: 4px; }.chart-callout strong { font-size: 11px; }.chart-callout small { display: none; }
   .migration-card { min-height: auto; padding: 23px; }.path-note { margin-top: 28px; grid-template-columns: 1fr; gap: 8px; }.migration-wide-card { padding: 27px 23px; grid-template-columns: 1fr; }.migration-wide-card > p, .change-list, .source-link-wrap { grid-column: 1; }.change-list { grid-template-columns: 1fr; }.change-list span + span { padding-left: 0; border-left: 0; border-top: 1px solid var(--light-line); }.source-link-wrap { align-items: flex-start; flex-direction: column; }
 }
 
