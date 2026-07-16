@@ -331,6 +331,9 @@ function updateChartPoint(index) {
   const discount = aeroIsPremium
     ? (1 - (1 / (1 + value / 100))) * 100
     : Math.abs(value);
+  const reciprocalPremium = aeroIsPremium
+    ? value
+    : ((1 / (1 + value / 100)) - 1) * 100;
 
   $("#endGuide").setAttribute("x1", pointX);
   $("#endGuide").setAttribute("x2", pointX);
@@ -339,8 +342,12 @@ function updateChartPoint(index) {
   $("#endPoint").setAttribute("cx", pointX);
   $("#endPoint").setAttribute("cy", pointY);
   $("#chartTooltipRoute").textContent = `${cheaperRoute} CHEAPER`;
-  $("#chartTooltipValue").textContent = `AERO PREMIUM ${signedPercent(value)}`;
-  $("#chartTooltipMetric").textContent = `${cheaperRoute} EFFECTIVE DISCOUNT ${Math.abs(discount).toFixed(2)}%`;
+  $("#chartTooltipValue").textContent = aeroIsPremium
+    ? `AERO PREMIUM ${signedPercent(value)}`
+    : `AERO DISCOUNT ${Math.abs(discount).toFixed(2)}%`;
+  $("#chartTooltipMetric").textContent = aeroIsPremium
+    ? `VELO EFFECTIVE DISCOUNT ${Math.abs(discount).toFixed(2)}%`
+    : `VELO PRICE PREMIUM +${reciprocalPremium.toFixed(2)}%`;
   $("#chartTooltipDate").textContent = formatTooltipDate(
     chartState.timestamps?.[safeIndex],
     chartState.labels?.[safeIndex],
