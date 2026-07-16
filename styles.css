@@ -219,7 +219,7 @@ a { color: inherit; text-decoration: none; }
 .staked-card .path-badge { background: var(--blue); border-color: var(--blue); color: white; }
 .migration-card-title { padding: 48px 0 36px; border-bottom: 1px solid var(--ink); }
 .token-pair { display: flex; align-items: center; gap: 11px; margin-bottom: 27px; }
-.token-pair .asset-stamp { width: 62px; height: 62px; flex: 0 0 62px; border: 1px solid var(--ink); border-radius: 0; background: white; }
+.token-pair .asset-stamp { width: 62px; height: 62px; flex: 0 0 62px; border: 1px solid var(--ink); border-radius: 0; background: var(--paper); }
 .token-pair .asset-stamp img { width: auto; height: auto; max-width: 44px; max-height: 44px; }
 .token-pair-plus { color: var(--muted); font-size: 24px; font-weight: 700; line-height: 1; }
 .nft-stamp { width: 55px; height: 55px; margin-bottom: 25px; display: grid; place-items: center; background: var(--ink); color: var(--acid); font: 800 11px/1 monospace; box-shadow: 7px 7px 0 var(--blue); }
