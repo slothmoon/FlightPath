@@ -222,7 +222,7 @@
         <div class="history-head reveal">
           <div>
             <span class="overline">RELATIVE PRICE HISTORY</span>
-            <h2 id="historyTitle">AERO premium to VELO</h2>
+            <h2 id="historyTitle">AERO price gap vs VELO</h2>
           </div>
           <div class="period-switcher" role="group" aria-label="Chart date range">
             <button type="button" data-period="24H">24H</button>
@@ -237,11 +237,11 @@
             <div><span>LATEST CANDLE</span><strong id="chartLatest">—</strong><small id="chartLatestTime">—</small></div>
             <div><span>PERIOD HIGH</span><strong id="chartHigh">—</strong></div>
             <div><span>PERIOD AVG.</span><strong id="chartAverage">—</strong></div>
-            <p>Above zero, VELO is cheaper.<br />Below zero, AERO is cheaper.<br /><br />Coinbase closing prices · today's on-chain conversion ratio applied across the selected period.<br /><br /><b id="historyResolution">30D · 6-HOUR CANDLES</b></p>
+            <p>Above zero, AERO costs more.<br />Below zero, AERO costs less.<br /><br />Coinbase closing prices · today's on-chain conversion ratio applied across the selected period.<br /><br /><b id="historyResolution">30D · 6-HOUR CANDLES</b></p>
           </aside>
           <div class="chart-frame">
             <div class="chart-y-axis" id="chartYAxis"></div>
-            <svg id="historyChart" viewBox="0 0 1000 340" preserveAspectRatio="none" role="img" aria-label="AERO premium to VELO chart">
+            <svg id="historyChart" viewBox="0 0 1000 340" preserveAspectRatio="none" role="img" aria-label="AERO price gap versus VELO chart">
               <defs>
                 <linearGradient id="areaFade" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0" stop-color="#1b40ff" stop-opacity=".24" />
@@ -265,7 +265,7 @@
             <div class="chart-callout" id="chartCallout" hidden>
               <span id="chartTooltipRoute">DATA UNAVAILABLE</span>
               <strong id="chartTooltipValue">—</strong>
-              <small id="chartTooltipMetric">AERO PREMIUM —</small>
+              <small id="chartTooltipMetric">AERO PRICE GAP —</small>
               <small id="chartTooltipDate">—</small>
             </div>
             <div class="chart-x-axis" id="chartLabels"></div>
