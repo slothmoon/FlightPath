@@ -252,7 +252,7 @@ function calculate() {
     ui.spreadDollar.textContent = "—";
     ui.heroPremium.textContent = "—";
     ui.heroSaving.textContent = "—";
-    ui.heroPremiumLabel.textContent = "ROUTE PRICE PREMIUM";
+    ui.heroPremiumLabel.textContent = "ROUTE COST DIFFERENCE";
     ui.heroSavingCopy.textContent = "EFFECTIVE DISCOUNT UNAVAILABLE";
     ui.heroSavingSuffix.textContent = "Live prices and both supply feeds are required.";
     ui.heroRouteName.textContent = "UNAVAILABLE";
@@ -278,7 +278,7 @@ function calculate() {
   ui.spreadDollar.textContent = money(spread, 4);
   ui.heroPremium.textContent = `${format(relativeSpread, 2)}%`;
   ui.heroSaving.textContent = money(saving, 0);
-  ui.heroPremiumLabel.textContent = `${premiumName} PRICE PREMIUM`;
+  ui.heroPremiumLabel.textContent = `${premiumName} COSTS MORE`;
   ui.heroSavingCopy.textContent = `${cheaperName} EFFECTIVE DISCOUNT · ${format(discountRate, 2)}%`;
   ui.heroSavingSuffix.textContent = `SAVED ON EQUIVALENT OUTPUT VS A $10K ${premiumName} PURCHASE`;
   ui.heroRouteName.textContent = cheaperName;
